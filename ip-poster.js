@@ -1,4 +1,18 @@
-let http = require('http');
+const secrets = require('./secrets.js');
+const http = require('http');
+
+const postData = '{"Sample": "Hello World"}';
+
+async function main() {
+  process.stdout.write('Hello! Welcome to the IP-Posting service.')
+  req.write(postData);
+
+  req.on('error', (e) => {
+    console.error(`Problem with request: ${e.message}`);
+  });
+};
+
+
 
 let ipAddress = null;
 
@@ -11,9 +25,31 @@ function getIpAddress() {
 }
 
 function postIpAddress(ipAddress) {
-  
+  const options = {
+    hostname: 'www.jsonbin.io',
+    port: 80,
+    path: '/b/' + secrets.jsonBinId,
+    method: 'PUT',
+    headers: {
+      "Content-Type": "application/json",
+      "secret-key": secrets.secretKey,
+    }
+  };
+
+  const req = http.request(options, (response) => {
+    console.log(`STATUS: ${response.statusCode}`);
+    console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
+    response.setEncoding('utf8');
+    response.on('data', (chunk) => {
+      console.log(`BODY: ${chunk}`);
+    });
+    response.on('end', () => {
+      console.log('no more data.');
+    });
+  });
 };
 
-if (ipAddress) {
-  console.log(`IP Address: ${ipAddress});  
-}
+
+
+
+main();
