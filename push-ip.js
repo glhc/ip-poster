@@ -1,4 +1,5 @@
-const secrets = require('./secrets.js');
+'use strict';
+// const secrets = require('./secrets.js');
 const http = require('http');
 
 const postData = '{"Sample": "Hello World"}';
