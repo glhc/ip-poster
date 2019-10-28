@@ -1,4 +1,5 @@
 'use strict';
+
 // const secrets = require('./secrets.js');
 const http = require('http');
 
@@ -18,7 +19,7 @@ function getIpAddress() {
   http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
       resp.on('data', function(ip) {
         doSomething(ip.toString());
-          });
+      });
   });
 }
 
@@ -48,7 +49,10 @@ function postIpAddress(ipAddress) {
 };
 
 function doSomething(result) {
-  console.log(result);
+  return result;
 }
 
 getIpAddress();
+
+exports.getIpAddress = getIpAddress;
+exports.doSomething = doSomething;

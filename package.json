@@ -1,0 +1,16 @@
+{
+  "name": "ip-poster",
+  "version": "0.1.0",
+  "description": "Retrieves IP address and posts it, so that dynamically shifting IP addresses can be tracked",
+  "main": "push-ip.js",
+  "repository": "https://github.com/glhc/ip-poster.git",
+  "author": "Patrick Horne <patrickahorne@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "jest": "^24.9.0"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}
