@@ -1,3 +1,7 @@
 /* This is a sample of the secrets.js file*/
 
-exports.jsonBinApi = '';
+// jsonbin.io config
+exports.jsonBin = {
+  binId: '',
+  secretKey: ''
+}
