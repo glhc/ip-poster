@@ -19,46 +19,50 @@ async function main() {
 function getIpAddress() {
   http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
       resp.on('data', function(ip) {
-        updateIpAddress(ip.toString())
+        updateIpAddress(ip.toJSON())
         console.log('Data received from ipify.org. IP address is:');
-        console.log(ip);
+        console.log(ip.toJSON());
       });
   });
 }
 
 function updateIpAddress(ipAddress) {
-  let data = '';
+  return new Promise(function (resolve, reject) {
+    let data = '';
 
-  const options = {
-    path: '/b/' + secrets.jsonBin.binId,
-    method: 'put',
-    headers: {
-      "content-type": "application/json",
-      "secret-key": secrets.jsonBin.secretkey,
-      "versioning": false
-    }
-  };
+    const options = {
+      hostname: 'jsonbin.io',
+      path: '/b/' + secrets.jsonBin.binId,
+      method: 'put',
+      headers: {
+        "content-type": "application/json",
+        "secret-key": secrets.jsonBin.secretKey,
+        "versioning": false
+      }
+    };
 
-  const req = https.request('https://jsonbin.io', options)
-  req.write(ipAddress);
-  req.end();
+    const req = https.request(options, function (res) {
+      res.on('data', function (chunk) {
+        data += chunk;
+      });
 
-  req.on('error', function(err) {
-    console.error('update of ip address failed.');
-    throw new error(err);
-  });
+      res.on('end', function () {
+        if (data) {
+          resolve(data);
+        } else {
+          throw new Error('No data recieved in body of jsonbin.io');
+        }
+      });
+    });
 
-  
+    req.write(ipAddress);
+    req.end();
 
-  req.on('data', function (chunk) {
-    data += chunk;
-  });
-
-  req.on('end', function () {
-    if (data) {
-      
-    }
-  });
+    req.on('error', function (err) {
+      console.error('update of ip address failed.');
+      throw new error(err);
+    });
+  })
 };
 
 getIpAddress();
