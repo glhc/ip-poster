@@ -19,9 +19,9 @@ async function main() {
 function getIpAddress() {
   http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
       resp.on('data', function(ip) {
-        updateIpAddress(ip.toJSON())
+        updateIpAddress(JSON.stringify(ip.toString()))
         console.log('Data received from ipify.org. IP address is:');
-        console.log(ip.toJSON());
+        console.log(JSON.stringify(ip.toString()));
       });
   });
 }
@@ -33,7 +33,7 @@ function updateIpAddress(ipAddress) {
     const options = {
       hostname: 'jsonbin.io',
       path: '/b/' + secrets.jsonBin.binId,
-      method: 'put',
+      method: 'PUT',
       headers: {
         "content-type": "application/json",
         "secret-key": secrets.jsonBin.secretKey,
@@ -48,6 +48,9 @@ function updateIpAddress(ipAddress) {
 
       res.on('end', function () {
         if (data) {
+          console.log('Response from jsonbin.io received:');
+          console.log(data.statusCode);
+          console.log(data);
           resolve(data);
         } else {
           throw new Error('No data recieved in body of jsonbin.io');
