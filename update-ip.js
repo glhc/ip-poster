@@ -7,31 +7,40 @@ const https = require('https');
 const postData = '{"Sample": "Hello World"}';
 
 async function main() {
-  process.stdout.write('Hello! Welcome to the IP-Posting service.')
-  req.write(postData);
-
-  req.on('error', (e) => {
-    console.error(`Problem with request: ${e.message}`);
-  });
+  console.log('Hello! Welcome to the IP-Posting service.');
+  getIpAddress()
+    .then((ipAddress) => updateIpAddress(ipAddress))
+    .then((data) => {console.log(data)})
+    .catch((err) => {console.error(err)});
 };
 
 
 function getIpAddress() {
-  http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
-      resp.on('data', function(ip) {
-        updateIpAddress(JSON.stringify(ip.toString()))
-        console.log('Data received from ipify.org. IP address is:');
-        console.log(JSON.stringify(ip.toString()));
+  return new Promise((resolve) => {
+    http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function (resp) {
+      resp.on('data', function (ip) {
+    console.log('data: ');
+        resolve(ip.toString());
       });
+    });
   });
 }
 
+/*
+ * Sends IP Address to JSONbin.io
+ * @ipAddress {String} - Current IP address
+ * 
+ */
 function updateIpAddress(ipAddress) {
   return new Promise(function (resolve, reject) {
     let data = '';
 
+    let sendPackage = {
+      home: ipAddress
+    };
+
     const options = {
-      hostname: 'jsonbin.io',
+      hostname: 'api.jsonbin.io',
       path: '/b/' + secrets.jsonBin.binId,
       method: 'PUT',
       headers: {
@@ -53,22 +62,22 @@ function updateIpAddress(ipAddress) {
           console.log(data);
           resolve(data);
         } else {
-          throw new Error('No data recieved in body of jsonbin.io');
+          reject(data);
         }
       });
     });
 
-    req.write(ipAddress);
+    req.write(JSON.stringify(sendPackage));
     req.end();
 
     req.on('error', function (err) {
       console.error('update of ip address failed.');
+      console.log(err[1]);
       throw new error(err);
     });
   })
 };
 
-getIpAddress();
-
+main();
 exports.getIpAddress = getIpAddress;
 exports.updateIpAddress = updateIpAddress;
